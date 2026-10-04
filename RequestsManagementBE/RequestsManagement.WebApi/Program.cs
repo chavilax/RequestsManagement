@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 using RequestsManagement.BL.Interfaces;
 using RequestsManagement.BL.Services;
 using RequestsManagement.DAL.Context;
@@ -6,11 +9,16 @@ using RequestsManagement.DAL.Repositories;
 using RequestsManagement.DAL.Seed;
 using RequestsManagement.WebApi.Middleware;
 using RequestsManagement.WebApi.Services;
+using RequestsManagement.WebApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Controllers ---
 builder.Services.AddControllers();
+
+// --- FluentValidation (ולידציה אוטומטית על ה-DTOs הנכנסים) ---
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateStatusDTOValidator>();
 
 // --- Swagger / OpenAPI ---
 builder.Services.AddEndpointsApiExplorer();
