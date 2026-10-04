@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>עדכון סטטוס פנייה #{{ data.request.id }}</h2>
+
+<mat-dialog-content>
+  <!-- מצב Conflict (409) -->
+  @if (conflict()) {
+    <div class="conflict-message">
+      <mat-icon>warning</mat-icon>
+      <p>הפנייה עודכנה על ידי משתמש אחר בזמן שעבדת עליה.</p>
+      <p class="hint">יש לרענן את הנתונים ולנסות שוב.</p>
+    </div>
+  } @else {
+    <p class="current-status">
+      סטטוס נוכחי: <strong>{{ currentStatusLabel }}</strong>
+    </p>
+
+    @if (hasAvailableTransitions) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>סטטוס חדש</mat-label>
+        <mat-select [(ngModel)]="selectedStatus">
+          @for (opt of availableStatuses; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    } @else {
+      <p class="no-transitions">
+        לא ניתן לשנות את הסטטוס של פנייה שהושלמה.
+      </p>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (conflict()) {
+    <button mat-flat-button color="primary" (click)="closeAndRefresh()">רענן ונסה שוב</button>
+  } @else {
+    <button mat-button (click)="cancel()" [disabled]="saving()">ביטול</button>
+    @if (hasAvailableTransitions) {
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+        @if (saving()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          שמור
+        }
+      </button>
+    }
+  }
+</mat-dialog-actions>

@@ -1,0 +1,21 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+.vs/
+
+# Angular / Node
+**/node_modules/
+RequestsManagementFE/dist/
+RequestsManagementFE/.angular/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log

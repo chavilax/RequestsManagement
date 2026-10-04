@@ -1,0 +1,9 @@
+<mat-toolbar color="primary">
+  <mat-icon>support_agent</mat-icon>
+  <span class="app-title">{{ title() }}</span>
+</mat-toolbar>
+
+<main>
+  <app-stats-panel [refreshTrigger]="statsRefresh()"></app-stats-panel>
+  <app-requests-list (dataChanged)="onDataChanged()"></app-requests-list>
+</main>

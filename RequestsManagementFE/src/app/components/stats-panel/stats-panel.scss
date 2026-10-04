@@ -1,0 +1,67 @@
+.stats-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  padding: 16px;
+  flex: 1 1 240px;
+}
+
+.total-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0 1 180px;
+  background: linear-gradient(135deg, #1565c0, #1976d2);
+  color: white;
+
+  .total-value {
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  .total-label {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+}
+
+.card-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.counts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.count-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #f5f5f5;
+
+  .count-value {
+    font-weight: 700;
+  }
+
+  // צבעי סטטוס - תואמים לטבלה
+  &.status-0 { border-right: 4px solid #1565c0; }
+  &.status-1 { border-right: 4px solid #ef6c00; }
+  &.status-2 { border-right: 4px solid #7b1fa2; }
+  &.status-3 { border-right: 4px solid #2e7d32; }
+
+  // צבעי עדיפות
+  &.priority-0 { border-right: 4px solid #90a4ae; }
+  &.priority-1 { border-right: 4px solid #fbc02d; }
+  &.priority-2 { border-right: 4px solid #e53935; }
+}

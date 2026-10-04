@@ -1,0 +1,35 @@
+@if (stats(); as s) {
+  <div class="stats-wrapper">
+    <!-- סה"כ -->
+    <mat-card class="stat-card total-card">
+      <div class="total-value">{{ s.totalCount | number }}</div>
+      <div class="total-label">סה"כ פניות</div>
+    </mat-card>
+
+    <!-- לפי סטטוס -->
+    <mat-card class="stat-card">
+      <div class="card-title">לפי סטטוס</div>
+      <div class="counts-grid">
+        @for (item of s.countByStatus; track item.status) {
+          <div class="count-item {{ statusClass(item.status) }}">
+            <span class="count-label">{{ statusLabel(item.status) }}</span>
+            <span class="count-value">{{ item.count | number }}</span>
+          </div>
+        }
+      </div>
+    </mat-card>
+
+    <!-- לפי עדיפות -->
+    <mat-card class="stat-card">
+      <div class="card-title">לפי עדיפות</div>
+      <div class="counts-grid">
+        @for (item of s.countByPriority; track item.priority) {
+          <div class="count-item priority-{{ item.priority }}">
+            <span class="count-label">{{ priorityLabel(item.priority) }}</span>
+            <span class="count-value">{{ item.count | number }}</span>
+          </div>
+        }
+      </div>
+    </mat-card>
+  </div>
+}

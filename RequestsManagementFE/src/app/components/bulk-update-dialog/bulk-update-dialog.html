@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>עדכון סטטוס מרובה</h2>
+
+<mat-dialog-content>
+  <!-- מצב תוצאה (אחרי עדכון עם כשלונות) -->
+  @if (result(); as res) {
+    <div class="result-summary">
+      <div class="result-row success">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ res.succeededCount }} פניות עודכנו בהצלחה</span>
+      </div>
+      <div class="result-row failed">
+        <mat-icon>error</mat-icon>
+        <span>{{ res.failedCount }} פניות נכשלו</span>
+      </div>
+
+      <div class="failures-list">
+        <div class="failures-title">פירוט כשלונות:</div>
+        @for (f of res.failed; track f.requestId) {
+          <div class="failure-item">
+            <span>פנייה #{{ f.requestId }}</span>
+            <span class="reason">{{ reasonLabel(f.reason) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <p class="count-info">נבחרו <strong>{{ count }}</strong> פניות לעדכון.</p>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>סטטוס חדש לכולן</mat-label>
+      <mat-select [(ngModel)]="selectedStatus">
+        @for (opt of statusOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <p class="hint">
+      <mat-icon>info</mat-icon>
+      פנייה שהמעבר אליה אינו חוקי, או שעודכנה בינתיים, תדווח ככישלון. השאר יעודכנו.
+    </p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (result()) {
+    <button mat-flat-button color="primary" (click)="close()">סגור</button>
+  } @else {
+    <button mat-button (click)="cancel()" [disabled]="saving()">ביטול</button>
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+      @if (saving()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        עדכן {{ count }} פניות
+      }
+    </button>
+  }
+</mat-dialog-actions>

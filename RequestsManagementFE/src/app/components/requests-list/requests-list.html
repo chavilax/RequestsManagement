@@ -1,0 +1,180 @@
+<div class="requests-container">
+  <!-- סרגל סינון וחיפוש -->
+  <div class="filters-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>חיפוש (כותרת / ארגון)</mat-label>
+      <input matInput (input)="onSearchChange($any($event.target).value)" placeholder="הקלד לחיפוש..." />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>סטטוס</mat-label>
+      <mat-select [ngModel]="filter.status" (ngModelChange)="onStatusChange($event)">
+        <mat-option [value]="null">הכל</mat-option>
+        @for (opt of statusOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>עדיפות</mat-label>
+      <mat-select [ngModel]="filter.priority" (ngModelChange)="onPriorityChange($event)">
+        <mat-option [value]="null">הכל</mat-option>
+        @for (opt of priorityOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>ארגון</mat-label>
+      <input matInput [ngModel]="filter.organizationName" (ngModelChange)="onOrganizationChange($event)" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>מטפל</mat-label>
+      <input matInput [ngModel]="filter.assignedTo" (ngModelChange)="onAssignedToChange($event)" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>מיון לפי</mat-label>
+      <mat-select [ngModel]="filter.sortBy" (ngModelChange)="onSortChange($event)">
+        @for (opt of sortOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-icon-button (click)="toggleSortDirection()" [title]="filter.sortDescending ? 'יורד' : 'עולה'">
+      <mat-icon>{{ filter.sortDescending ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+    </button>
+
+    <button mat-stroked-button (click)="resetFilters()">
+      <mat-icon>clear</mat-icon>
+      איפוס
+    </button>
+  </div>
+
+  <!-- סרגל פעולות Bulk - מופיע כשיש פניות נבחרות -->
+  @if (selectedIds().size > 0) {
+    <div class="bulk-bar">
+      <span>נבחרו {{ selectedIds().size }} פניות</span>
+      <button mat-flat-button color="primary" (click)="openBulkDialog()">
+        <mat-icon>edit</mat-icon>
+        עדכן סטטוס לנבחרים
+      </button>
+      <button mat-button (click)="clearSelection()">נקה בחירה</button>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="state-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>טוען פניות...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @else if (error()) {
+    <div class="state-container error-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>אירעה שגיאה בטעינת הפניות.</p>
+      <button mat-flat-button (click)="retry()">נסה שוב</button>
+    </div>
+  }
+
+  <!-- Empty -->
+  @else if (items().length === 0) {
+    <div class="state-container">
+      <mat-icon>inbox</mat-icon>
+      <p>לא נמצאו פניות התואמות לסינון.</p>
+    </div>
+  }
+
+  <!-- Data -->
+  @else {
+    <table mat-table [dataSource]="items()" class="requests-table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            [checked]="allSelected()"
+            [indeterminate]="someSelected()"
+            (change)="toggleSelectAll()"
+          ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <mat-checkbox
+            [checked]="isSelected(r.id)"
+            (change)="toggleSelection(r.id)"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>מזהה</th>
+        <td mat-cell *matCellDef="let r">{{ r.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>כותרת</th>
+        <td mat-cell *matCellDef="let r">{{ r.title }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="organizationName">
+        <th mat-header-cell *matHeaderCellDef>ארגון</th>
+        <td mat-cell *matCellDef="let r">{{ r.organizationName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>סטטוס</th>
+        <td mat-cell *matCellDef="let r">
+          <span class="status-badge status-{{ r.status }}">{{ statusLabel(r.status) }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="priority">
+        <th mat-header-cell *matHeaderCellDef>עדיפות</th>
+        <td mat-cell *matCellDef="let r">{{ priorityLabel(r.priority) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="assignedTo">
+        <th mat-header-cell *matHeaderCellDef>מטפל</th>
+        <td mat-cell *matCellDef="let r">{{ r.assignedTo || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>נוצר</th>
+        <td mat-cell *matCellDef="let r">{{ r.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>פעולות</th>
+        <td mat-cell *matCellDef="let r">
+          <button mat-icon-button color="primary" (click)="openStatusDialog(r)" title="עדכן סטטוס">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="openHistoryDialog(r)" title="היסטוריה">
+            <mat-icon>history</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  }
+
+  <!-- Paginator - תמיד מוצג כשיש תוצאות -->
+  @if (!loading() && !error() && totalCount() > 0) {
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="filter.pageSize"
+      [pageIndex]="filter.page - 1"
+      [pageSizeOptions]="[10, 20, 50, 100]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+    ></mat-paginator>
+  }
+</div>

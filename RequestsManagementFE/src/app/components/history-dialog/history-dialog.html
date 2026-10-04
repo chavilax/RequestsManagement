@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>היסטוריית שינויים - פנייה #{{ data.requestId }}</h2>
+
+<mat-dialog-content>
+  @if (loading()) {
+    <div class="state-container">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+  } @else if (error()) {
+    <div class="state-container error">
+      <mat-icon>error_outline</mat-icon>
+      <p>שגיאה בטעינת ההיסטוריה.</p>
+    </div>
+  } @else if (history().length === 0) {
+    <div class="state-container">
+      <p>אין היסטוריה להצגה.</p>
+    </div>
+  } @else {
+    <div class="timeline">
+      @for (item of history(); track item.id) {
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="transition">
+              <span class="status-from">{{ statusLabel(item.previousStatus) }}</span>
+              <mat-icon>arrow_back</mat-icon>
+              <span class="status-to">{{ statusLabel(item.newStatus) }}</span>
+            </div>
+            <div class="meta">
+              <span>{{ item.changedBy }}</span>
+              <span>{{ item.changedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>סגור</button>
+</mat-dialog-actions>

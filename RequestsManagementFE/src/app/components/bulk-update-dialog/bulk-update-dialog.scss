@@ -1,0 +1,65 @@
+.full-width {
+  width: 100%;
+  min-width: 360px;
+}
+
+.count-info {
+  margin-bottom: 16px;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 8px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.result-summary {
+  min-width: 360px;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  margin-bottom: 8px;
+
+  &.success {
+    color: #2e7d32;
+  }
+  &.failed {
+    color: #c62828;
+  }
+}
+
+.failures-list {
+  margin-top: 12px;
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+
+  .failures-title {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 8px;
+  }
+}
+
+.failure-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 14px;
+
+  .reason {
+    color: #c62828;
+  }
+}
